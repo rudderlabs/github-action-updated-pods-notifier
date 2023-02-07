@@ -15,6 +15,7 @@ This action detects a single outdated pod and acoordingly either create a new Gi
 ### `title`
 
 **Optional** Title of the issue. If value is not passed then `Issue` will not be created/updated. First we will check, if issue, already exists or not, with the given title, if exists then edit the issue or create a new issue with the given title.
+Since we're editing the existing issue (if present and open), make sure `title` doesn't matches more than 1 issue, otherwise this action will fail.
 
 ### `body`
 
