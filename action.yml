@@ -8,8 +8,6 @@ inputs:
   directory:
     description: "Enter the directory where Podfile is located"
     required: true
-  search-issue-with-query:
-    description: "Search issues with query" # Default is set to the title of the issue
   title: 
     description: "Title of the issue"
   body:
@@ -90,24 +88,8 @@ runs:
 
     - name: Fetch issue number for the matching issue title
       if: env.POD_NEEDS_UPDATE == 'true' && env.TITLE != ''
-      run: |
-        echo "issue_number=$(gh issue list --search "${{ env.TITLE }}" | grep "${{ env.TITLE }}" | awk '{print $1}' )" >> $GITHUB_ENV
-      # echo "issue_exist=false" >> $GITHUB_ENV
+      run: echo "issue_number=$(gh issue list --search "${{ env.TITLE }}" | grep "${{ env.TITLE }}" | awk '{print $1}' )" >> $GITHUB_ENV
       shell: sh
-
-    # - name: Check if issue exist or not
-    #   if: env.POD_NEEDS_UPDATE == 'true' && env.TITLE != '' && env.issue_title == inputs.title
-    #   run: |
-    #     echo "issue_exist=true" >> $GITHUB_ENV 
-    #   shell: bash
-
-    # - name: Print issue number and title
-    #   if: env.POD_NEEDS_UPDATE == 'true' && env.TITLE != ''
-    #   run: |
-    #     echo "Issue number: ${{ env.issue_number }}"
-    #     echo "Issue title: ${{ env.issue_title }}"
-    #     echo "Issue exists: ${{ env.issue_exist }}"
-    #   shell: bash
 
     - name: Create new label
       if: inputs.title != '' && inputs.labels != '' && env.issue_number == ''
