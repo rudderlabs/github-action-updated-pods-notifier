@@ -66,9 +66,9 @@ runs:
       run: echo "booleanValue=${{ env.HAS_ANY_OUTDATED }}" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Set body of the issue, if defined
+    - name: Override the default value for body
       if: inputs.body != ''
-      run: echo "BODY=${{ inputs.body }}." >> $GITHUB_ENV
+      run: echo "BODY=${{ inputs.body }}" >> $GITHUB_ENV
       shell: bash
 
     - name: Analyse if title of the issue would be created or not
