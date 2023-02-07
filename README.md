@@ -14,11 +14,7 @@ This action detects a single outdated pod and acoordingly either create a new Gi
 
 ### `title`
 
-**Optional** Title of the issue. If value is not passed then `Issue` will not be created/updated.
-
-### `search-issue-with-query`
-
-**Optional** Enter query. Default is set to `Title` of the query.
+**Optional** Title of the issue. If value is not passed then `Issue` will not be created/updated. First we will check, if issue, already exists or not, with the given title, if exists then edit the issue or create a new issue with the given title.
 
 ### `body`
 
@@ -59,7 +55,6 @@ steps:
       outdated-pod-name: "Amplitude"
       directory: "Example"
       title: "fix: update Amplitude SDK to the latest version"
-      search-issue-with-query: "fix: update Amplitude SDK to the latest version"
       assignee: "1abhishekpandey"
       labels: "outdatedPod"
       color: "FBCA04"

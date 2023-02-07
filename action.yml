@@ -68,15 +68,6 @@ runs:
       run: echo "booleanValue=${{ env.HAS_ANY_OUTDATED }}" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Initialise SEARCH_ISSUE_WITH_QUERY
-      run: echo "SEARCH_ISSUE_WITH_QUERY=${{ env.TITLE }}" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Override SEARCH_ISSUE_WITH_QUERY, if input is available
-      if: inputs.search-issue-with-query != ''
-      run: echo "SEARCH_ISSUE_WITH_QUERY=${{ inputs.search-issue-with-query }}" >> $GITHUB_ENV
-      shell: bash
-
     - name: Set body of the issue, if defined
       if: inputs.body != ''
       run: echo "BODY=${{ inputs.body }}." >> $GITHUB_ENV
@@ -90,7 +81,6 @@ runs:
     - name: Print constant values
       run: |
         echo "Title: ${{ env.TITLE }}"
-        echo "Search issues with query: ${{ env.SEARCH_ISSUE_WITH_QUERY }}"
         echo "Body: ${{ env.BODY }}"
         echo "Assignee: ${{ env.ASSIGNEE }}"
         echo "Laebls: ${{ inputs.labels }}"
@@ -98,13 +88,29 @@ runs:
         echo "Does pod needs update: ${{ env.POD_NEEDS_UPDATE }}"
       shell: bash
 
-    - name: Check if issue exist or not
-      if: env.POD_NEEDS_UPDATE == 'true' && env.SEARCH_ISSUE_WITH_QUERY != ''
-      run: echo "issue_number=$(gh issue list --search "${{ env.SEARCH_ISSUE_WITH_QUERY }}" --json number | jq '.[].number')" >> $GITHUB_ENV
-      shell: bash
+    - name: Fetch issue number for the matching issue title
+      if: env.POD_NEEDS_UPDATE == 'true' && env.TITLE != ''
+      run: |
+        echo "issue_number=$(gh issue list --search "${{ env.TITLE }}" | grep "${{ env.TITLE }}" | awk '{print $1}' )" >> $GITHUB_ENV
+      # echo "issue_exist=false" >> $GITHUB_ENV
+      shell: sh
+
+    # - name: Check if issue exist or not
+    #   if: env.POD_NEEDS_UPDATE == 'true' && env.TITLE != '' && env.issue_title == inputs.title
+    #   run: |
+    #     echo "issue_exist=true" >> $GITHUB_ENV 
+    #   shell: bash
+
+    # - name: Print issue number and title
+    #   if: env.POD_NEEDS_UPDATE == 'true' && env.TITLE != ''
+    #   run: |
+    #     echo "Issue number: ${{ env.issue_number }}"
+    #     echo "Issue title: ${{ env.issue_title }}"
+    #     echo "Issue exists: ${{ env.issue_exist }}"
+    #   shell: bash
 
     - name: Create new label
-      if: inputs.title != '' && inputs.labels != ''
+      if: inputs.title != '' && inputs.labels != '' && env.issue_number == ''
       run: gh label create --force ${{ inputs.labels }} --description "Pod is outdated" --color ${{ inputs.color}}
       shell: bash
 
@@ -117,7 +123,7 @@ runs:
       if: inputs.title != '' && env.POD_NEEDS_UPDATE == 'true' && env.issue_number != ''
       run: |
         gh issue edit ${{ env.issue_number }} --body "${{ env.BODY }}"
-        echo "ISSUE_URL=$(gh issue list --search "${{ env.SEARCH_ISSUE_WITH_QUERY }}" --json url | jq '.[].url')" >> $GITHUB_ENV
+        echo "ISSUE_URL=$(gh issue view "${{ env.issue_number }}" --json url | jq '.[]')" >> $GITHUB_ENV
       shell: bash
 
     - name: Assigne github issue url
