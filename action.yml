@@ -88,7 +88,7 @@ runs:
 
     - name: Fetch issue number for the matching issue title
       if: env.POD_NEEDS_UPDATE == 'true' && env.TITLE != ''
-      run: echo "issue_number=$(gh issue list --search "${{ env.TITLE }}" | grep "${{ env.TITLE }}" | awk '{print $1}' )" >> $GITHUB_ENV
+      run: echo "issue_number=$(gh issue list --search "${{ env.TITLE }}" --label "${{ inputs.labels }}" --author ${{ env.ASSIGNEE }}" | grep "${{ env.TITLE }}" | awk '{print $1}' )" >> $GITHUB_ENV
       shell: sh
 
     - name: Create new label
