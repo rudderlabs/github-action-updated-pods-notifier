@@ -115,5 +115,5 @@ runs:
     - name: Assigne github issue url
       id: github-issue-url
       if: env.POD_NEEDS_UPDATE == 'true' && env.ISSUE_URL != ''
-      run: echo "issue_url=${{ env.issue_url }}" >> $GITHUB_OUTPUT
+      run: echo "issue_url=${{ env.ISSUE_URL }}" >> $GITHUB_OUTPUT
       shell: bash
