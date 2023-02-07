@@ -26,9 +26,9 @@ outputs:
   issue-url: # id of output
     description: "The issue of the url if it is created or already exists"
     value: ${{ steps.github-issue-url.outputs.issue_url }}
-  has_outdated_pod: # id of output
+  has-outdated-pod: # id of output
     description: "Outdated pod (which is given as input: outdated-pod-name) present"
-    value: ${{ steps.has-pod-outdated.booleanValue }}
+    value: ${{ steps.has-pod-outdated.outputs.booleanValue }}
 
 runs:
   using: "composite"
