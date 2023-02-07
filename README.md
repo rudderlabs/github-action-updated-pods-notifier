@@ -2,6 +2,8 @@
 
 This action detects a single outdated pod and acoordingly either create a new GitHub issue (if the issue with the passed `title` doesn't exists) or update the existing one.
 
+The purpose of this GitHub Action is to detect a single outdate pods and create and manage a single issue (if more than one issue is present with the matching title then this action will not work, since it always tries to edit the existing issue first).
+
 ## Inputs
 
 ### `outdated-pod-name`
