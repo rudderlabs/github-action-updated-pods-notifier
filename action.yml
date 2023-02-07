@@ -26,6 +26,9 @@ outputs:
   issue-url: # id of output
     description: "The issue of the url if it is created or already exists"
     value: ${{ steps.github-issue-url.outputs.issue_url }}
+  has_outdated_pod: # id of output
+    description: "Outdated pod (which is given as input: outdated-pod-name) present"
+    value: ${{ steps.has-pod-outdated.booleanValue }}
 
 runs:
   using: "composite"
@@ -58,6 +61,11 @@ runs:
         echo "BODY=Update the ${{ inputs.outdated-pod-name }} SDK from the current version ${{ env.CURRENT_VERSION }} to the ${{ env.LATEST_VERSION }}." >> $GITHUB_ENV
         echo "ASSIGNEE=${{ inputs.assignee }}" >> $GITHUB_ENV
         echo "POD_NEEDS_UPDATE=${{ env.HAS_ANY_OUTDATED }}" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Assigne github issue url
+      id: has-pod-outdated
+      run: echo "booleanValue=${{ env.HAS_ANY_OUTDATED }}" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Initialise SEARCH_ISSUE_WITH_QUERY
