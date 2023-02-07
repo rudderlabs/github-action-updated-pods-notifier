@@ -102,15 +102,18 @@ runs:
 
     - name: Create new issue
       if: inputs.title != '' && env.POD_NEEDS_UPDATE == 'true' && env.issue_number == ''
-      run: gh issue create -a "${{ env.ASSIGNEE }}" -b "${{ env.BODY }}" -t "${{ env.TITLE }}" --label "${{ inputs.labels }}"
+      run: echo "ISSUE_URL=$(gh issue create -a "${{ env.ASSIGNEE }}" -b "${{ env.BODY }}" -t "${{ env.TITLE }}" --label "${{ inputs.labels }}")" >> $GITHUB_ENV
       shell: bash
 
     - name: Edit existing issue
       if: inputs.title != '' && env.POD_NEEDS_UPDATE == 'true' && env.issue_number != ''
-      run: gh issue edit ${{ env.issue_number }} --body "${{ env.BODY }}"
+      run: |
+        gh issue edit ${{ env.issue_number }} --body "${{ env.BODY }}"
+        echo "ISSUE_URL=$(gh issue list --search "${{ env.SEARCH_ISSUE_WITH_QUERY }}" --json url | jq '.[].url')" >> $GITHUB_ENV
       shell: bash
 
-    - id: github-issue-url
-      if: env.POD_NEEDS_UPDATE == 'true' && env.SEARCH_ISSUE_WITH_QUERY != ''
-      run: echo "issue_url=$(gh issue list --search "${{ env.SEARCH_ISSUE_WITH_QUERY }}" --json url | jq '.[].url')" >> $GITHUB_OUTPUT
+    - name: Assigne github issue url
+      id: github-issue-url
+      if: env.POD_NEEDS_UPDATE == 'true' && env.ISSUE_URL != ''
+      run: echo "issue_url=${{ env.issue_url }}" >> $GITHUB_OUTPUT
       shell: bash
