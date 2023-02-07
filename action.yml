@@ -18,7 +18,7 @@ inputs:
     description: "Assignee who'll be assigned for the isuue"
   labels:
     description: "The label for an issue that would be assigned while creating issue"
-  colors:
+  color:
     description: "Colors for the label"
     default: FBCA04
   
