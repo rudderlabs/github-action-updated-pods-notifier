@@ -1,23 +1,91 @@
-# Hello world javascript action
+# Check outdate pods and create issue
 
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
+This action detects a single outdated pod and acoordingly either create a new GitHub issue (if the issue with the passed `title` doesn't exists) or update the existing one.
 
 ## Inputs
 
-### `who-to-greet`
+### `outdated-pod-name`
 
-**Required** The name of the person to greet. Default `"World"`.
+**Required** Enter the pod name for which outdated pods need to be searched.
+
+### `directory`
+
+**Required** Enter the directory where Podfile is located
+
+### `title`
+
+**Optional** Title of the issue. If value is not passed then `Issue` will not be created/updated.
+
+### `search-issue-with-query`
+
+**Optional** Enter query. Default is set to `Title` of the query.
+
+### `body`
+
+**Optional** Description of the issue. Default value is: "Update the `outdated-pod-name` SDK from the current version `x.y.z` to the latest version `x.y.z`."
+
+### `assignee`
+
+**Optional** Person (Github ID) who'll be assigned for the new isuue.
+
+### `labels`
+
+**Optional** The label for the `issue`.
+
+### `color`
+
+**Optional** Colors for the label. Default is set to `FBCA04`.
 
 ## Outputs
 
-### `time`
+### `issue-url`
 
-The time we greeted you.
+The GitHub `issue url`, if it is either created or edited.
+
+## `has-outdated-pod`
+
+It will be `true` if pod have been outdated, otherwise `false`.
 
 ## Example usage
 
+### Inputs
+
 ```yaml
-uses: actions/hello-world-javascript-action@v1.1
-with:
-  who-to-greet: "Mona the Octocat"
+steps:
+  - name: Check outdated pods and create issue
+    id: check-outdated-pods-and-create-issue
+    uses: 1abhishekpandey/pod-outdated-check-and-create-github-issue@v1.0.0
+    with:
+      outdated-pod-name: "Amplitude"
+      directory: "Example"
+      title: "fix: update Amplitude SDK to the latest version"
+      search-issue-with-query: "fix: update Amplitude SDK to the latest version"
+      assignee: "1abhishekpandey"
+      labels: "outdatedPod"
+      color: "FBCA04"
+    env:
+      GH_TOKEN: ${{ github.token }}
+```
+
+### Outputs
+
+```yaml
+steps:
+  - name: Check outdated pods and create issue
+    id: check-outdated-pods-and-create-issue
+    uses: 1abhishekpandey/pod-outdated-check-and-create-github-issue@v1.0.0
+    with:
+      outdated-pod-name: "Amplitude"
+      directory: "Example"
+      title: "fix: update Amplitude SDK to the latest version"
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+  - name: Get the github issue url
+    if: steps.check-outdated-pods-and-create-issue.outputs.issue-url != ''
+    run: echo "The Github issue url is ${{ steps.check-outdated-pods-and-create-issue.outputs.issue-url }}"
+
+  - name: Is outdated pods present
+    if: steps.check-outdated-pods-and-create-issue.outputs.has-outdated-pod == 'true'
+    run: echo "Outdated pod is detected"
 ```

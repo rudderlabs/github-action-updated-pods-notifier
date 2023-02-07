@@ -26,6 +26,9 @@ outputs:
   issue-url: # id of output
     description: "The issue of the url if it is created or already exists"
     value: ${{ steps.github-issue-url.outputs.issue_url }}
+  has-outdated-pod: # id of output
+    description: "Outdated pod (which is given as input: outdated-pod-name) present"
+    value: ${{ steps.has-pod-outdated.outputs.booleanValue }}
 
 runs:
   using: "composite"
@@ -58,6 +61,11 @@ runs:
         echo "BODY=Update the ${{ inputs.outdated-pod-name }} SDK from the current version ${{ env.CURRENT_VERSION }} to the ${{ env.LATEST_VERSION }}." >> $GITHUB_ENV
         echo "ASSIGNEE=${{ inputs.assignee }}" >> $GITHUB_ENV
         echo "POD_NEEDS_UPDATE=${{ env.HAS_ANY_OUTDATED }}" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Assigne github issue url
+      id: has-pod-outdated
+      run: echo "booleanValue=${{ env.HAS_ANY_OUTDATED }}" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Initialise SEARCH_ISSUE_WITH_QUERY
@@ -102,15 +110,18 @@ runs:
 
     - name: Create new issue
       if: inputs.title != '' && env.POD_NEEDS_UPDATE == 'true' && env.issue_number == ''
-      run: gh issue create -a "${{ env.ASSIGNEE }}" -b "${{ env.BODY }}" -t "${{ env.TITLE }}" --label "${{ inputs.labels }}"
+      run: echo "ISSUE_URL=$(gh issue create -a "${{ env.ASSIGNEE }}" -b "${{ env.BODY }}" -t "${{ env.TITLE }}" --label "${{ inputs.labels }}")" >> $GITHUB_ENV
       shell: bash
 
     - name: Edit existing issue
       if: inputs.title != '' && env.POD_NEEDS_UPDATE == 'true' && env.issue_number != ''
-      run: gh issue edit ${{ env.issue_number }} --body "${{ env.BODY }}"
+      run: |
+        gh issue edit ${{ env.issue_number }} --body "${{ env.BODY }}"
+        echo "ISSUE_URL=$(gh issue list --search "${{ env.SEARCH_ISSUE_WITH_QUERY }}" --json url | jq '.[].url')" >> $GITHUB_ENV
       shell: bash
 
-    - id: github-issue-url
-      if: env.POD_NEEDS_UPDATE == 'true' && env.SEARCH_ISSUE_WITH_QUERY != ''
-      run: echo "issue_url=$(gh issue list --search "${{ env.SEARCH_ISSUE_WITH_QUERY }}" --json url | jq '.[].url')" >> $GITHUB_OUTPUT
+    - name: Assigne github issue url
+      id: github-issue-url
+      if: env.POD_NEEDS_UPDATE == 'true' && env.ISSUE_URL != ''
+      run: echo "issue_url=${{ env.ISSUE_URL }}" >> $GITHUB_OUTPUT
       shell: bash
