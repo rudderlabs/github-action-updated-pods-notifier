@@ -142,7 +142,7 @@ else
       export ISSUE_URL HAS_OUTDATED_PODS
     fi
   else
-    echo "No Outdted PODs detected"
+    echo "No Outdated PODs detected"
     export ISSUE_URL="" HAS_OUTDATED_PODS
   fi
 fi
