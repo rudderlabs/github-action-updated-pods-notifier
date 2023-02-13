@@ -64,8 +64,8 @@ create_new_issue() {
   echo "Creating new issue"
 
   # Create a label
-  if [ -n "$labels" ]; then
-
+  if [ -n "$LABELS" ]; then
+    echo "Creating new $LABELS label with the $COLOR color"
     $(gh label create --force "$LABELS" --description "Pod is outdated" --color "$COLOR")
   fi
   # Create a new issue
