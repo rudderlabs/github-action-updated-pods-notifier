@@ -29,7 +29,9 @@ echo "Change to directory: $INPUT_DIRECTORY"
 cd "$INPUT_DIRECTORY"
 
 # Remove the existing Podfile.lock and then install the pods
-rm Podfile.lock
+if [ -f Podfile.lock ]; then
+  rm Podfile.lock
+fi
 pod install
 
 # Function to trim whitespaces from a string
