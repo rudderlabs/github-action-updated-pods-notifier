@@ -1,49 +1,46 @@
 # Check outdate pods and create issue
 
-This action detects a single outdated pod and acoordingly either create a new GitHub issue (if the issue with the passed `title` doesn't exists) or update the existing one.
-
-The purpose of this GitHub Action is to detect a single outdate pods and create and manage a single issue (if more than one issue is present with the matching title then this action will not work, since it always tries to edit the existing issue first).
+This action has the capability to identify one or more outdated pods. Based on this detection, it will either create a new GitHub issue (if no issue with the specified `title` exists) or update an existing one. After the action is completed, it will pass the issue URL and a flag indicating whether or not an outdated pod was detected as output.
 
 ## Inputs
 
 ### `outdated-pod-name`
 
-**Required** Enter the pod name for which outdated pods need to be searched.
+**Required** Please input the names of the PODs for which you want to detect outdated versions.
 
 ### `directory`
 
-**Required** Enter the directory where Podfile is located
+**Required** Please enter the directory where the Podfile is located.
 
 ### `title`
 
-**Optional** Title of the issue. If value is not passed then `Issue` will not be created/updated. First we will check, if issue, already exists or not, with the given title, if exists then edit the issue or create a new issue with the given title.
-Since we're editing the existing issue (if present and open), make sure `title` doesn't matches more than 1 issue, otherwise this action will fail.
+**Optional** Please provide the title for the issue. If a value is not specified, the `issue` will not be created or updated. The script will first check if an issue with the given `title` already exists. If it does, the issue will be edited. If it does not exist, a new issue with the specified title will be created.
 
 ### `body`
 
-**Optional** Description of the issue. Default value is: "Update the `outdated-pod-name` SDK from the current version `x.y.z` to the latest version `x.y.z`."
+**Optional** Please provide a description for the issue. The default description is: "Update the `outdated-pod-name` SDK from the current version `x.y.z` to the latest version `x.y.z`."
 
 ### `assignee`
 
-**Optional** Person (Github ID) who'll be assigned for the new isuue.
+**Optional** Please provide the `Github ID` of the person who will be assigned to the new issue.
 
 ### `labels`
 
-**Optional** The label for the `issue`.
+**Optional** Please provide the label for the `issue`.
 
 ### `color`
 
-**Optional** Colors for the label. Default is set to `FBCA04`.
+**Optional** Please provide the colors for the label. The default color is set to FBCA04.
 
 ## Outputs
 
 ### `issue-url`
 
-The GitHub `issue url`, if it is either created or edited.
+The URL of the created or edited GitHub issue.
 
 ## `has-outdated-pod`
 
-It will be `true` if pod have been outdated, otherwise `false`.
+A flag that indicates whether any outdated pods were detected. The value will be `true` if an outdated pod was found, and `false` if no outdated pods were detected.
 
 ## Example usage
 

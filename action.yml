@@ -23,93 +23,24 @@ inputs:
 outputs:
   issue-url: # id of output
     description: "The issue of the url if it is created or already exists"
-    value: ${{ steps.github-issue-url.outputs.issue_url }}
+    value: ${{ steps.set-output-variables.outputs.issue_url }}
   has-outdated-pod: # id of output
     description: "Outdated pod (which is given as input: outdated-pod-name) present"
-    value: ${{ steps.has-pod-outdated.outputs.booleanValue }}
+    value: ${{ steps.set-output-variables.outputs.booleanValue }}
 
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3
-
-    - name: Install pods
+    - name: Run shell script
+      id: "set-output-variables"
+      env:
+        ISSUE_URL: ${{ env.ISSUE_URL }}
+        HAS_OUTDATED_PODS: ${{ env.HAS_OUTDATED_PODS }}
       run: |
-        cd example
-        rm Podfile.lock
-        pod install
-      shell: bash
-
-    - name: Check outdated pods
-      run: |
-        cd ${{ inputs.directory }}
-        echo "CURRENT_VERSION=$(pod outdated | grep -i '${{ inputs.outdated-pod-name }}' | cut -d ">" -f2 | cut -d "(" -f1 | sed 's/ //g')" >> $GITHUB_ENV
-        echo "LATEST_VERSION=$(pod outdated | grep -i '${{ inputs.outdated-pod-name }}' | cut -d "(" -f2 | cut -d ")" -f1)" >> $GITHUB_ENV
-        echo "HAS_ANY_OUTDATED=false" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Is latest version exist
-      if: env.LATEST_VERSION != ''
-      run: echo "HAS_ANY_OUTDATED=true" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Set constant values
-      run: |
-        echo "TITLE=${{ inputs.title }}" >> $GITHUB_ENV
-        echo "BODY=Update the ${{ inputs.outdated-pod-name }} SDK from the current version ${{ env.CURRENT_VERSION }} to the ${{ env.LATEST_VERSION }}." >> $GITHUB_ENV
-        echo "ASSIGNEE=${{ inputs.assignee }}" >> $GITHUB_ENV
-        echo "POD_NEEDS_UPDATE=${{ env.HAS_ANY_OUTDATED }}" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Assigne github issue url
-      id: has-pod-outdated
-      run: echo "booleanValue=${{ env.HAS_ANY_OUTDATED }}" >> $GITHUB_OUTPUT
-      shell: bash
-
-    - name: Override the default value for body
-      if: inputs.body != ''
-      run: echo "BODY=${{ inputs.body }}" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Analyse if title of the issue would be created or not
-      if: inputs.title == ''
-      run: echo "Since title of the issue is not present, issue will not be created. To create the issue at least provide the title."
-      shell: bash
-
-    - name: Print constant values
-      run: |
-        echo "Title: ${{ env.TITLE }}"
-        echo "Body: ${{ env.BODY }}"
-        echo "Assignee: ${{ env.ASSIGNEE }}"
-        echo "Laebls: ${{ inputs.labels }}"
-        echo "Colors: ${{ inputs.color }}"
-        echo "Does pod needs update: ${{ env.POD_NEEDS_UPDATE }}"
-      shell: bash
-
-    - name: Fetch issue number for the matching issue title
-      if: env.POD_NEEDS_UPDATE == 'true' && env.TITLE != ''
-      run: echo "issue_number=$(gh issue list --search "${{ env.TITLE }}" --label "${{ inputs.labels }}" --author "${{ env.ASSIGNEE }}" | grep "${{ env.TITLE }}" | awk '{print $1}' )" >> $GITHUB_ENV
+        chmod 0755 ${{ github.action_path }}/scripts/multiple_outdatedpod.sh
+        source "${{ github.action_path }}/scripts/multiple_outdatedpod.sh" "${{ inputs.outdated-pod-name }}" "${{ inputs.directory }}" "${{ inputs.title }}" "${{ inputs.assignee }}" "${{ inputs.body }}" "${{ inputs.labels }}" "${{ inputs.color }}"
+      
+        echo "issue_url=$ISSUE_URL" >> $GITHUB_OUTPUT
+        echo "booleanValue=$HAS_OUTDATED_PODS" >> $GITHUB_OUTPUT
+        
       shell: sh
-
-    - name: Create new label
-      if: inputs.title != '' && inputs.labels != '' && env.issue_number == ''
-      run: gh label create --force ${{ inputs.labels }} --description "Pod is outdated" --color ${{ inputs.color}}
-      shell: bash
-
-    - name: Create new issue
-      if: inputs.title != '' && env.POD_NEEDS_UPDATE == 'true' && env.issue_number == ''
-      run: echo "ISSUE_URL=$(gh issue create -a "${{ env.ASSIGNEE }}" -b "${{ env.BODY }}" -t "${{ env.TITLE }}" --label "${{ inputs.labels }}")" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Edit existing issue
-      if: inputs.title != '' && env.POD_NEEDS_UPDATE == 'true' && env.issue_number != ''
-      run: |
-        gh issue edit ${{ env.issue_number }} --body "${{ env.BODY }}"
-        echo "ISSUE_URL=$(gh issue view "${{ env.issue_number }}" --json url | jq '.[]')" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Assigne github issue url
-      id: github-issue-url
-      if: env.POD_NEEDS_UPDATE == 'true' && env.ISSUE_URL != ''
-      run: echo "issue_url=${{ env.ISSUE_URL }}" >> $GITHUB_OUTPUT
-      shell: bash
