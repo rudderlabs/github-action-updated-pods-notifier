@@ -44,6 +44,8 @@ A flag that indicates whether any outdated pods were detected. The value will be
 
 ## Example usage
 
+Obtain the most recent tag from the GitHub release section and utilize that version in place of v1.0.0.
+
 ### Inputs
 
 ```yaml
