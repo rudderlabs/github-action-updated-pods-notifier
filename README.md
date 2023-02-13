@@ -48,6 +48,7 @@ A flag that indicates whether any outdated pods were detected. The value will be
 
 ```yaml
 steps:
+  - uses: actions/checkout@v3
   - name: Check outdated pods and create issue
     id: check-outdated-pods-and-create-issue
     uses: 1abhishekpandey/pod-outdated-check-and-create-github-issue@v1.0.0
@@ -66,6 +67,7 @@ steps:
 
 ```yaml
 steps:
+  - uses: actions/checkout@v3
   - name: Check outdated pods and create issue
     id: check-outdated-pods-and-create-issue
     uses: 1abhishekpandey/pod-outdated-check-and-create-github-issue@v1.0.0
