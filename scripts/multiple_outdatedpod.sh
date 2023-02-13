@@ -28,6 +28,8 @@ echo "Color is: $COLOR"
 echo "Change to directory: $INPUT_DIRECTORY"
 cd "$INPUT_DIRECTORY"
 
+# Remove the existing Podfile.lock and then install the pods
+rm Podfile.lock
 pod install
 
 # Function to trim whitespaces from a string
