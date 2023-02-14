@@ -2,30 +2,30 @@ name: "Check outdate pods and create issue"
 description: "Check for outdated pods and create issue in GitHub with the provided title (and other parameters) if it doesn't exist"
 
 inputs:
-  outdated-pod-name:
-    description: "Enter the pod name for which outdated pods need to be searched" # Only one pod will be checked
+  outdated-pod-names:
+    description: "Provide the names of the PODs for which you want to detect outdated versions" 
     required: true
   directory:
     description: "Enter the directory where Podfile is located"
     required: true
   title: 
-    description: "Title of the issue"
+    description: "Title of the issue. This value is required to create or edit the issue"
   body:
-    description: "Description of the issue" # Leave it blank for predefined update message
+    description: "Description of the issue. Leave it blank for predefined update message"
   assignee: 
-    description: "Assignee who'll be assigned for the isuue"
+    description: "Provide the Github ID of the person who will be assigned to the new issue"
   labels:
-    description: "The label for an issue that would be assigned while creating issue"
+    description: "Provide the label for the issue"
   color:
-    description: "Colors for the label"
+    description: "Provide the colors for the label"
     default: FBCA04
   
 outputs:
   issue-url: # id of output
-    description: "The issue of the url if it is created or already exists"
+    description: "The URL of the created or edited GitHub issue"
     value: ${{ steps.set-output-variables.outputs.issue_url }}
   has-outdated-pod: # id of output
-    description: "Outdated pod (which is given as input: outdated-pod-name) present"
+    description: "A flag that indicates whether any outdated pods were detected"
     value: ${{ steps.set-output-variables.outputs.booleanValue }}
 
 runs:
@@ -38,7 +38,7 @@ runs:
         HAS_OUTDATED_PODS: ${{ env.HAS_OUTDATED_PODS }}
       run: |
         chmod 0755 ${{ github.action_path }}/scripts/multiple_outdatedpod.sh
-        source "${{ github.action_path }}/scripts/multiple_outdatedpod.sh" "${{ inputs.outdated-pod-name }}" "${{ inputs.directory }}" "${{ inputs.title }}" "${{ inputs.assignee }}" "${{ inputs.body }}" "${{ inputs.labels }}" "${{ inputs.color }}"
+        source "${{ github.action_path }}/scripts/multiple_outdatedpod.sh" "${{ inputs.outdated-pod-names }}" "${{ inputs.directory }}" "${{ inputs.title }}" "${{ inputs.assignee }}" "${{ inputs.body }}" "${{ inputs.labels }}" "${{ inputs.color }}"
       
         echo "issue_url=$ISSUE_URL" >> $GITHUB_OUTPUT
         echo "booleanValue=$HAS_OUTDATED_PODS" >> $GITHUB_OUTPUT

@@ -4,7 +4,7 @@ This action has the capability to identify one or more outdated pods. Based on t
 
 ## Inputs
 
-### `outdated-pod-name`
+### `outdated-pod-names`
 
 **Required** Please input the names of the PODs for which you want to detect outdated versions.
 
@@ -18,7 +18,7 @@ This action has the capability to identify one or more outdated pods. Based on t
 
 ### `body`
 
-**Optional** Please provide a description for the issue. The default description is: "Update the `outdated-pod-name` SDK from the current version `x.y.z` to the latest version `x.y.z`."
+**Optional** Please provide a description for the issue. The default description is: "Update the `outdated-pod-names` SDK from the current version `x.y.z` to the latest version `x.y.z`."
 
 ### `assignee`
 
@@ -55,7 +55,7 @@ steps:
     id: check-outdated-pods-and-create-issue
     uses: 1abhishekpandey/pod-outdated-check-and-create-github-issue@v1.0.0
     with:
-      outdated-pod-name: "Amplitude"
+      outdated-pod-names: "Rudder, Amplitude"
       directory: "Example"
       title: "fix: update Amplitude SDK to the latest version"
       assignee: "1abhishekpandey"
@@ -74,7 +74,7 @@ steps:
     id: check-outdated-pods-and-create-issue
     uses: 1abhishekpandey/pod-outdated-check-and-create-github-issue@v1.0.0
     with:
-      outdated-pod-name: "Amplitude"
+      outdated-pod-names: "Amplitude"
       directory: "Example"
       title: "fix: update Amplitude SDK to the latest version"
     env:
