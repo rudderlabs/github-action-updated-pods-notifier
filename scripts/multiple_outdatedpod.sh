@@ -89,13 +89,21 @@ body=()
 
 HAS_OUTDATED_PODS="false"
 
+# Check for Deprecated SDKs
+DEPRECATED_INFO=$(echo "$POD_OUTDATED_OUTPUT" | sed -n '/The following pods are deprecated:/,$p')
+
+# Refine the outdate pods i.e., remove the deprecated pods info, if present
+if [ -n "$DEPRECATED_INFO" ]; then
+  POD_OUTDATED_OUTPUT=$(echo "$POD_OUTDATED_OUTPUT" | grep -v "$DEPRECATED_INFO")
+fi
+
 # Check if outdated PODs are present or not and accordingly construct the description of the issue
 for value in "${MULTIPLE_PODS[@]}"; do
   INDIVIDUAL_POD=$(trim_whitespaces "$value")
   echo "Currently checking for pod: $INDIVIDUAL_POD"
 
-  CURRENT_VERSION=$(echo "$POD_OUTDATED_OUTPUT" | grep -i "$INDIVIDUAL_POD" | cut -d ">" -f2 | cut -d "(" -f1 | sed 's/ //g')
-  LATEST_VERSION=$(echo "$POD_OUTDATED_OUTPUT" | grep -i "$INDIVIDUAL_POD" | cut -d "(" -f2 | cut -d ")" -f1)
+  CURRENT_VERSION=$(echo "$POD_OUTDATED_OUTPUT" | grep -i "$INDIVIDUAL_POD" | cut -d ">" -f2 | cut -d "(" -f1 | sed 's/ //g' | sed -n '1p')
+  LATEST_VERSION=$(echo "$POD_OUTDATED_OUTPUT" | grep -i "$INDIVIDUAL_POD" | cut -d "(" -f2 | cut -d ")" -f1 | sed -n '1p')
 
   # Outdated POD is detected, update the body
   if [ -n "$CURRENT_VERSION" ]; then
@@ -106,6 +114,13 @@ for value in "${MULTIPLE_PODS[@]}"; do
     body+=("$GENERATED_BODY")
   fi
 done
+
+# If Deprecate SDK is detected then add that into the body
+if [ -n "$DEPRECATED_INFO" ]; then
+  HAS_OUTDATED_PODS="true"
+  echo "Deprecated SDK is found. Adding that in the body."
+  body+=("$DEPRECATED_INFO")
+fi
 
 if [ -z "$TITLE" ]; then
   echo "Since title of the issue is not present, issue will not be created. To create the issue at least provide the title."
