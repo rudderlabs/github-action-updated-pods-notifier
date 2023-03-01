@@ -18,7 +18,7 @@ This action has the capability to identify one or more outdated pods. Based on t
 
 ### `body`
 
-**Optional** Please provide a description for the issue. The default description is: "Update the `outdated-pod-names` SDK from the current version `x.y.z` to the `x.y.z`."
+**Optional** Please provide a description for the issue. The default description is: "Update the `outdated-pod-names` SDK from the current version `x.y.z` to the latest version `x.y.z`."
 
 ### `assignee`
 
