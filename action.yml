@@ -1,4 +1,4 @@
-name: "Check outdate pods and create issue"
+name: "Check outdated pods and create issue"
 description: "Check for outdated pods and create issue in GitHub with the provided title (and other parameters) if it doesn't exist"
 
 inputs:
