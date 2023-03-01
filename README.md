@@ -30,7 +30,7 @@ This action has the capability to identify one or more outdated pods. Based on t
 
 ### `color`
 
-**Optional** Please provide the colors for the label. The default color is set to FBCA04.
+**Optional** Please provide the `color` for the label. The default color is set to `FBCA04`.
 
 ## Outputs
 
