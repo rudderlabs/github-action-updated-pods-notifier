@@ -30,7 +30,7 @@ This action has the capability to identify one or more outdated pods. Based on t
 
 ### `color`
 
-**Optional** Please provide the colors for the label. The default color is set to FBCA04.
+**Optional** Please provide the `color` for the label. The default color is set to `FBCA04`.
 
 ## Outputs
 
@@ -53,7 +53,7 @@ steps:
   - uses: actions/checkout@v3
   - name: Check outdated pods and create issue
     id: check-outdated-pods-and-create-issue
-    uses: 1abhishekpandey/pod-outdated-check-and-create-github-issue@v1.0.0
+    uses: rudderlabs/github-action-updated-pods-notifier@main
     with:
       outdated-pod-names: "Rudder, Amplitude"
       directory: "Example"
@@ -72,7 +72,7 @@ steps:
   - uses: actions/checkout@v3
   - name: Check outdated pods and create issue
     id: check-outdated-pods-and-create-issue
-    uses: 1abhishekpandey/pod-outdated-check-and-create-github-issue@v1.0.0
+    uses: rudderlabs/github-action-updated-pods-notifier@main
     with:
       outdated-pod-names: "Amplitude"
       directory: "Example"
